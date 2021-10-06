@@ -67,10 +67,14 @@ DATA = pd.read_excel(filename + '.xlsx')
 #
 
 CV_list = len(DATA['Ca_mmol/L'].dropna())*[2]
+
+cum_vol1 = np.cumsum(CV_list) # S data
+
+
 CV_list.insert(0,1)
 CV_list.pop(-1)
 
-cum_vol = np.cumsum(CV_list) #- d_vol
+cum_vol2 = np.cumsum(CV_list) # Cl data
 
 
 A = 11.28 # cm2
@@ -82,7 +86,7 @@ V_tot = A * L # total volume of the plug!!, ml
 #volume_step = volume_step.astype(float)    
 #
 #cum_vol = np.cumsum(volume_step)
-
+cum_vol = cum_vol2
 cum_vol_glob = cum_vol
 
 # load concentration for each volume step, concentration can be in any units 
@@ -118,7 +122,9 @@ dof = max(0, n - p) # number of degrees of freedom
 tval = t.ppf(1.0-alpha/2., dof) 
 
 p_vol = functions.pp_vol
-PV = (cum_vol-d_vol)/p_vol
+PV1 = (cum_vol1-d_vol)/p_vol
+PV2 = (cum_vol2-d_vol)/p_vol
+
 
 # this is rescaling since the model expects an input from 0 to 1
 
@@ -136,14 +142,14 @@ ax1.yaxis.set_ticks_position('both')
 ax1.tick_params(axis='y', which='both', direction='in') 
 
 
-points1 = ax1.scatter(PV, tracer_norm, ec='blue', fc='none', s=150)
+points1 = ax1.scatter(PV2, tracer_norm, ec='blue', fc='none', s=150)
 
 line1 = ax1.plot(np.arange(0.01, 5, 0.01), 
          ((functions.plot_function(np.arange(0.01, 5, 0.01), pe, 
                          tracer_init, tracer_inj)) - tracer_init)/(tracer_inj - tracer_init),
          c='blue')
          
-points2 = ax1.scatter(PV, S_exp/16.1875, ec='red', fc='none', s=150)    
+points2 = ax1.scatter(PV1, S_exp/16.1875, ec='red', fc='none', s=150)    
          
 ax1.grid(linewidth=0.5, linestyle = '--')
 

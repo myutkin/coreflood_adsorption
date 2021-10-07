@@ -73,16 +73,17 @@ PV = 11.3e-6 # A*L*phi # m3
 
 # values for adsorption exp
 aNa_init = 0.1 # M
-aNa_inj= 0.03 # M
+aNa_inj= 0.024 # M
 aCl_init = aNa_init
-aCl_inj = 0.016
+aCl_inj = 0.01
+Sds = 14e-3 # M
 
+# desorption brine 
 # S_init = 12 # mmol/L, from adsorption experiment??? fitted to match the bottom
 dNa_init = 0.03 # M
-dNa_inj = 0.115 # M
+dNa_inj = 0.10 # M
 dCl_init = 0.016
-dCl_inj = dNa_init
-Sds = 14e-3 # M
+dCl_inj = dNa_inj
 
 
 # phreeqc_input = phreeqc_input_common + '\n' + phreeqc_input_loading + '\n' + phreeqc_input_export
@@ -237,7 +238,7 @@ END
             -totals               Na  Ca Cl Sds
 
             
-  SOLUTION 0 Injected solution without, desorption
+  SOLUTION 0 Injected solution without, sds
 pH        7 charge
 units     mol/L
 
@@ -274,7 +275,7 @@ disp = L/peclet
 CEC = 0.03 # 5*a_v*1e18/N_av/phi/1000 # mol/L, cation CEC
 CEC1 = 0.05 # mol/L from tracer data #0.3*a_v*1e18/N_av/phi/1000 # mol/L, anion CEC
 log_k = 4 # cation exch const
-log_k1 = -1.25 # anion exchange const
+log_k1 = -1.1 # anion exchange const
 ashifts = 5*N # 4 pv
 dshifts = 5*N
 sample = 'IL-HP-4'
@@ -369,7 +370,7 @@ ax1a.tick_params(axis='x', which='both', direction='in', top='true')
 ax1a.tick_params(axis='y', which='both', left='true', direction='in', pad=int(7)) 
 
 ax2a = ax1a.twinx()
-ax2a.tick_params(axis='y', which='both', left='false', labelright='false', direction='in', pad=int(7)) 
+ax2a.tick_params(axis='y', which='both', left='', labelright='', labelleft='',  right='', pad=int(7)) 
 
 l1 = ax1a.plot(PV_calc_a, Na_calc_a, c=colors[0], linewidth=2, linestyle='-.', label=r'\ce{Na^+}$_{\text{model}}$')
 l2 = ax1a.scatter(PV_exp1, Na_exp_a, marker='s', ec=colors[0], fc='none', linewidth=3, s=150, label=r'\ce{Na^+}$_{\text{exp}}$')
@@ -381,7 +382,7 @@ l6 = ax1a.scatter(PV_exp2, Cl_exp_a, marker='>', ec=colors[1], fc='none', linewi
 ax1a.set_ylabel(r'\ce{Cl^-}, \ce{Na^+} concentration, M')
 ax1a.set_xlabel(r'Dimensionless time, $ut/\varphi L$')
 
-ax1a.set_ylim([0, 0.17])
+ax1a.set_ylim([0, 0.16])
 ax1a.set_xlim([0, 5])
 ax1a.grid(linewidth=0.5, linestyle=':')
 
@@ -392,12 +393,12 @@ l7 = ax2a.plot(PV_calc_a, S_calc_a*1000, c=colors[3], linewidth=2, label=r'SDS$_
 l8 = ax2a.scatter(PV_exp1, S_exp_a, marker='^', ec=colors[3], fc='none', linewidth=3, s=150, label=r'SDS$_{\text{exp}}$')
 
 #ax2a.set_ylabel(r'\ce{Ca^2+}, \ce{R-SO4^-} concentration, mM')
-ax2a.set_ylim([0, 25])
+ax2a.set_ylim([0, 16])
 
 lns = [l1[0], l2, l3[0], l4, l5[0], l6, l7[0], l8]
 labs = [i.get_label() for i in lns]
-ax1a.legend(lns, labs, loc='upper left', # bbox_to_anchor=(0.05,1,0,0), 
-           frameon=True, labelspacing=0.25, borderpad=0.25, numpoints=1, ncol=2)
+#ax1a.legend(lns, labs, loc='upper left', # bbox_to_anchor=(0.05,1,0,0), 
+#           frameon=True, labelspacing=0.25, borderpad=0.25, numpoints=1, ncol=2)
 
 
 #%% plot the desorption 
@@ -418,14 +419,14 @@ PV_exp2 = cum_vol2/(PV * 1e6)
 
 Na_exp_d = exp_data_d['Na_mol/L'].dropna() # mol/L
 Ca_exp_d = exp_data_d['Ca_mmol/L'].dropna() # mmol/L
-Cl_exp_d = exp_data_d['Cl, ppm'].dropna()/35.5/1000 # mol/L
+Cl_exp_d = exp_data_d['Cl, ppm'].dropna()/35.5/1000*2 # mol/L, 2 is dilution factor
 S_exp_d = exp_data_d['S_mmol/L'].dropna() # mmol/L
 
 
 #ax1d = f1.add_subplot(1,2,2)
 
 ax2d = ax1d.twinx()
-ax1d.tick_params(axis='y', which='both', direction='in', pad=int(7)) 
+ax1d.tick_params(axis='y', which='both', direction='in', left='', labelleft='', pad=int(7)) 
 ax1d.tick_params(axis='x', which='both', direction='in', top='on') 
 ax2d.tick_params(axis='y', which='both', direction='in', pad=int(7)) 
 
@@ -439,7 +440,7 @@ l6 = ax1d.scatter(PV_exp2, Cl_exp_d, marker='>', ec=colors[1], fc='none', linewi
 #ax1d.set_ylabel(r'\ce{Cl^-}, \ce{Na^+} concentration, M')
 ax1d.set_xlabel(r'Dimensionless time, $ut/\varphi L$')
 
-ax1d.set_ylim([0, 0.17])
+ax1d.set_ylim([0, 0.16])
 ax1d.set_xlim([0, 5])
 ax1d.grid(linewidth=0.5, linestyle=':')
 
@@ -450,13 +451,13 @@ l7 = ax2d.plot(PV_calc_d, S_calc_d*1000, c=colors[3], linewidth=2, label=r'SDS$_
 l8 = ax2d.scatter(PV_exp1, S_exp_d, marker='^', ec=colors[3], fc='none', linewidth=3, s=150, label=r'SDS$_{\text{exp}}$')
 
 ax2d.set_ylabel(r'$10\times$\ce{Ca^2+}, \ce{R-SO4^-} concentration, mM')
-ax2d.set_ylim([0, 25])
+ax2d.set_ylim([0, 16])
 
 lns = [l1[0], l2, l3[0], l4, l5[0], l6, l7[0], l8]
 labs = [i.get_label() for i in lns]
-#ax1d.legend(lns, labs, loc='upper left', #bbox_to_anchor=(0.05,1,0,0), 
-#           frameon=True, labelspacing=0.25, borderpad=0.25, numpoints=1, ncol=2)
+ax1d.legend(lns, labs, loc='upper right', #bbox_to_anchor=(0.05,1,0,0), 
+          frameon=True, labelspacing=0.25, borderpad=0.25, numpoints=1, ncol=2)
 
-#f1.tight_layout()
+f1.tight_layout()
 f1.savefig('coreflood_both.png', dpi=300)
 plt.show()

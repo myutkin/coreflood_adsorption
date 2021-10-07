@@ -64,7 +64,7 @@ filename = 'SDS_desorption_IL-HP-4_Na, Ca, S Ksenia 26.8.2021'
 DATA = pd.read_excel(filename + '.xlsx')
 
 # d_vol = 9 # mL, measured experimentally on the coreflood
-#
+# check that the fitted value is close to it
 
 CV_list = len(DATA['Cl, ppm'].dropna())*[2]
 
@@ -76,7 +76,6 @@ CV_list.pop(-1)
 
 cum_vol2 = np.cumsum(CV_list) # Cl data
 
-S_inj = 16.1875 # mmol/L, from adsorption experiment
 
 A = 11.28 # cm2
 L = 6.94 # cm
@@ -90,9 +89,14 @@ cum_vol_glob = cum_vol
 # algorithm in the same units as here (see below)
 
 tracer = np.array(DATA['Cl, ppm'].dropna().values.tolist()) 
-tracer = tracer.astype(int)   
+# tracer = tracer.astype(int)   
 
 S_exp = np.array(DATA['S_mmol/L'].dropna().values.tolist()) 
+S_init = 12 # mmol/L, from adsorption experiment??? fitted to match the bottom
+
+Na_exp = np.array(DATA['Na_mol/L'].dropna().values.tolist()) 
+Na_init = 0.025 # M
+Na_inj = 0.115 # M
 
 # p0 is initial guess for Peclet, dead volume, initial tracer concentration, 
 # and injected tracer concentration
@@ -146,8 +150,10 @@ line1 = ax1.plot(np.arange(0.01, 5, 0.01),
                          tracer_init, tracer_inj)) - tracer_init)/(tracer_inj - tracer_init),
          c='blue')
          
-points2 = ax1.scatter(PV1, (S_inj - S_exp)/S_inj, ec='red', fc='none', s=150)    
-         
+points2 = ax1.scatter(PV1, (S_init - S_exp)/S_init, ec='red', fc='none', s=150)    
+  
+points3 = ax1.scatter(PV2, (Na_init - Na_exp)/(Na_init - Na_inj), ec='black', fc='none', s=150)    
+       
 ax1.grid(linewidth=0.5, linestyle = '--')
 
 textstr = '\n'.join((

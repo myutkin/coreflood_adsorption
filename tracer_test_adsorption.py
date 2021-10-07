@@ -156,10 +156,7 @@ ax1.grid(linewidth=0.5, linestyle = '--')
 textstr = '\n'.join((
         'IL-HP-4',
         r'$Pe = %.1f \pm %.1f$' % (pe, perr[0], ),
-#        r'$V_d = %.1f \pm %.1f ~ \mathrm{mL}$' % (d_vol, perr[1]*tval, ),
         r'$\varphi_F = %.2f \pm %.3f$' % (functions.pp_vol/V_tot, 2/V_tot),
-#        r'$Tracer_{inj} = %.1f \pm %.1f $' % (tracer_inj, perr[3]*tval, ),
-#        r'$Tracer_{init} = %.1f \pm %.1f $' % (tracer_init, perr[2]*tval, )
         ))
 props = dict(boxstyle='round', facecolor='white', alpha=0.5)
 #ax1.text(0.5, 0.2, textstr, fontsize=24, bbox=props,transform=fig.transFigure)
